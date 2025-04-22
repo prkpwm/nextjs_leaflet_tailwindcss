@@ -3,7 +3,7 @@
 1. Clone the repository
 
 ```bash
-git clone https://github.com/hunter10471/nextjs_travel_app.git
+git clone https://github.com/prkpwm/nextjs_leaflet_tailwindcss.git
 ```
 
 2. Change the working directory

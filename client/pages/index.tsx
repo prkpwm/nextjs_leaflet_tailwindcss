@@ -30,7 +30,7 @@ import { Contact } from './contact'; // Import the Contact component
 
 const Main: NextPage = () => {
   const Map = dynamic(() => import('../components/Map.jsx') as any, { ssr: false });
-  const [language, setLanguage] = useState('TH'); // Language state in Main
+  const [language, setLanguage] = useState('EN'); // Language state in Main
   const [page, setPage] = useState('collectibles'); // Page state in Main
 
   const handleLanguageToggle = () => {

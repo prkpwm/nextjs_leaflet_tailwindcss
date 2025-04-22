@@ -4,6 +4,8 @@ import { useInView } from "react-intersection-observer";
 
 type AuthProps = {
   language: string;
+  onPageChange: (page: string) => void;
+
 };
 
 export const Auth: NextPage<AuthProps> = ({ language }) => {
@@ -29,21 +31,41 @@ export const Auth: NextPage<AuthProps> = ({ language }) => {
     }
 
     try {
-      console.log("Submitting in:", authMode, "mode", { name, email, password });
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
+      const response = await fetch(
+        authMode === "login" ? "http://localhost:4200/login" : "http://localhost:4200/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(
+            authMode === "login" ? { email, password } : { name, email, password }
+          ),
+        }
+      );
 
-      if (authMode === "login") {
-        setSuccessMessage(authMessages.loginSuccess[language]);
-      } else if (authMode === "register") {
-        setSuccessMessage(authMessages.registerSuccess[language]);
-        setAuthMode("login");
-        setName("");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
+      const data = await response.json();
+
+      if (response.ok) {
+        if (authMode === "login") {
+          setSuccessMessage(authMessages.loginSuccess[language]);
+          // Optionally redirect the user or store user information
+          console.log("Login successful:", data);
+        } else if (authMode === "register") {
+          setSuccessMessage(authMessages.registerSuccess[language]);
+          setAuthMode("login");
+          setName("");
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+          console.log("Registration successful:", data);
+        }
+      } else {
+        setErrorMessage(data.message || authMessages.authError[language]);
+        console.error("Authentication error:", data);
       }
     } catch (error) {
-      console.error("Authentication error:", error);
+      console.error("Fetch error:", error);
       setErrorMessage(authMessages.authError[language]);
     } finally {
       setIsSubmitting(false);
@@ -54,7 +76,6 @@ export const Auth: NextPage<AuthProps> = ({ language }) => {
     threshold: 0,
     triggerOnce: true,
   });
-  
 
   const authMessages = {
     loginTitle: { TH: "เข้าสู่ระบบ", EN: "LOGIN" },
