@@ -12,8 +12,15 @@ type Props = {
   onPageChange: (page: string) => void;
 };
 
+type FooterMessages = {
+  collectibles: { TH: string; EN: string };
+  about: { TH: string; EN: string };
+  contact: { TH: string; EN: string };
+  languageToggle: { TH: string; EN: string };
+};
+
 export const Footer = ({ language, onLanguageToggle, onPageChange }: Props) => {
-  const footerMessages = {
+  const footerMessages: FooterMessages = {
     collectibles: { TH: 'ของสะสม', EN: 'Collectibles' },
     about: { TH: 'เกี่ยวกับเรา', EN: 'About us' },
     contact: { TH: 'ติดต่อเรา', EN: 'Contact Us' },
@@ -62,19 +69,19 @@ export const Footer = ({ language, onLanguageToggle, onPageChange }: Props) => {
           className='mx-1 my-1 lg:my-0 py-1 px-4 rounded-xl hover:bg-secondary hover:text-white cursor-pointer transition-all'
           onClick={() => onPageChange('collectibles')}
         >
-          {footerMessages.collectibles[language]}
+          {footerMessages.collectibles[language as keyof typeof footerMessages.collectibles]}
         </li>
         <li
           className='mx-1 my-1 lg:my-0 py-1 px-4 rounded-xl hover:bg-secondary hover:text-white cursor-pointer transition-all'
           onClick={() => onPageChange('about')}
         >
-          {footerMessages.about[language]}
+          {footerMessages.about[language as keyof typeof footerMessages.about]}
         </li>
         <li
           className='mx-1 my-1 lg:my-0 py-1 px-4 rounded-xl hover:bg-secondary hover:text-white cursor-pointer transition-all'
           onClick={() => onPageChange('contact')}
         >
-          {footerMessages.contact[language]}
+          {footerMessages.contact[language as keyof typeof footerMessages.contact]}
         </li>
       </ul>
       <div className='flex items-center justify-end'>

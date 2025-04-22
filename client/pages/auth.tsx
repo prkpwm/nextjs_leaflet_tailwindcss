@@ -5,10 +5,33 @@ import { useInView } from "react-intersection-observer";
 type AuthProps = {
   language: string;
   onPageChange: (page: string) => void;
-
 };
 
-export const Auth: NextPage<AuthProps> = ({ language }) => {
+export type AuthMessages = {
+  loginTitle: { TH: string; EN: string };
+  registerTitle: { TH: string; EN: string };
+  welcomeBack: { TH: string; EN: string };
+  createAccount: { TH: string; EN: string };
+  loginDescription: { TH: string; EN: string };
+  registerDescription: { TH: string; EN: string };
+  namePlaceholder: { TH: string; EN: string };
+  emailPlaceholder: { TH: string; EN: string };
+  passwordPlaceholder: { TH: string; EN: string };
+  confirmPasswordPlaceholder: { TH: string; EN: string };
+  loginButton: { TH: string; EN: string };
+  registerButton: { TH: string; EN: string };
+  noAccount: { TH: string; EN: string };
+  registerLink: { TH: string; EN: string };
+  haveAccount: { TH: string; EN: string };
+  loginLink: { TH: string; EN: string };
+  passwordMismatch: { TH: string; EN: string };
+  loginSuccess: { TH: string; EN: string };
+  registerSuccess: { TH: string; EN: string };
+  authError: { TH: string; EN: string };
+};
+
+
+export const Auth: NextPage<AuthProps> = ({ language, onPageChange }) => {
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,7 +40,28 @@ export const Auth: NextPage<AuthProps> = ({ language }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const authMessages:AuthMessages = {
+    loginTitle: { TH: "เข้าสู่ระบบ", EN: "LOGIN" },
+    registerTitle: { TH: "ลงทะเบียน", EN: "REGISTER" },
+    welcomeBack: { TH: "ยินดีต้อนรับกลับ!", EN: "Welcome Back!" },
+    createAccount: { TH: "สร้างบัญชีของคุณ", EN: "Create Your Account" },
+    loginDescription: { TH: "เข้าสู่ระบบเพื่อเข้าถึงบัญชีของคุณ", EN: "Log in to access your account." },
+    registerDescription: { TH: "ลงทะเบียนเพื่อสำรวจประสบการณ์ที่น่าทึ่ง", EN: "Sign up to explore amazing experiences." },
+    namePlaceholder: { TH: "ชื่อ", EN: "Name" },
+    emailPlaceholder: { TH: "อีเมล", EN: "Email" },
+    passwordPlaceholder: { TH: "รหัสผ่าน", EN: "Password" },
+    confirmPasswordPlaceholder: { TH: "ยืนยันรหัสผ่าน", EN: "Confirm Password" },
+    loginButton: { TH: "เข้าสู่ระบบ", EN: "Login" },
+    registerButton: { TH: "ลงทะเบียน", EN: "Register" },
+    noAccount: { TH: "ไม่มีบัญชี?", EN: "Don't have an account?" },
+    registerLink: { TH: "ลงทะเบียน", EN: "Register" },
+    haveAccount: { TH: "มีบัญชีอยู่แล้ว?", EN: "Already have an account?" },
+    loginLink: { TH: "เข้าสู่ระบบ", EN: "Login" },
+    passwordMismatch: { TH: "รหัสผ่านไม่ตรงกัน", EN: "Passwords do not match" },
+    loginSuccess: { TH: "เข้าสู่ระบบสำเร็จ!", EN: "Logged in successfully!" },
+    registerSuccess: { TH: "ลงทะเบียนสำเร็จ!", EN: "Registration successful!" },
+    authError: { TH: "เกิดข้อผิดพลาดในการตรวจสอบสิทธิ์", EN: "Authentication error" },
+  }  
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage("");
@@ -49,8 +93,10 @@ export const Auth: NextPage<AuthProps> = ({ language }) => {
       if (response.ok) {
         if (authMode === "login") {
           setSuccessMessage(authMessages.loginSuccess[language]);
-          // Optionally redirect the user or store user information
-          console.log("Login successful:", data);
+          // Simulate successful login and navigate to home
+          setTimeout(() => {
+            onPageChange('collectibles');
+          }, 1500);
         } else if (authMode === "register") {
           setSuccessMessage(authMessages.registerSuccess[language]);
           setAuthMode("login");
@@ -58,7 +104,6 @@ export const Auth: NextPage<AuthProps> = ({ language }) => {
           setEmail("");
           setPassword("");
           setConfirmPassword("");
-          console.log("Registration successful:", data);
         }
       } else {
         setErrorMessage(data.message || authMessages.authError[language]);
@@ -77,28 +122,7 @@ export const Auth: NextPage<AuthProps> = ({ language }) => {
     triggerOnce: true,
   });
 
-  const authMessages = {
-    loginTitle: { TH: "เข้าสู่ระบบ", EN: "LOGIN" },
-    registerTitle: { TH: "ลงทะเบียน", EN: "REGISTER" },
-    welcomeBack: { TH: "ยินดีต้อนรับกลับ!", EN: "Welcome Back!" },
-    createAccount: { TH: "สร้างบัญชีของคุณ", EN: "Create Your Account" },
-    loginDescription: { TH: "เข้าสู่ระบบเพื่อเข้าถึงบัญชีของคุณ", EN: "Log in to access your account." },
-    registerDescription: { TH: "ลงทะเบียนเพื่อสำรวจประสบการณ์ที่น่าทึ่ง", EN: "Sign up to explore amazing experiences." },
-    namePlaceholder: { TH: "ชื่อ", EN: "Name" },
-    emailPlaceholder: { TH: "อีเมล", EN: "Email" },
-    passwordPlaceholder: { TH: "รหัสผ่าน", EN: "Password" },
-    confirmPasswordPlaceholder: { TH: "ยืนยันรหัสผ่าน", EN: "Confirm Password" },
-    loginButton: { TH: "เข้าสู่ระบบ", EN: "Login" },
-    registerButton: { TH: "ลงทะเบียน", EN: "Register" },
-    noAccount: { TH: "ไม่มีบัญชี?", EN: "Don't have an account?" },
-    registerLink: { TH: "ลงทะเบียน", EN: "Register" },
-    haveAccount: { TH: "มีบัญชีอยู่แล้ว?", EN: "Already have an account?" },
-    loginLink: { TH: "เข้าสู่ระบบ", EN: "Login" },
-    passwordMismatch: { TH: "รหัสผ่านไม่ตรงกัน", EN: "Passwords do not match" },
-    loginSuccess: { TH: "เข้าสู่ระบบสำเร็จ!", EN: "Logged in successfully!" },
-    registerSuccess: { TH: "ลงทะเบียนสำเร็จ!", EN: "Registration successful!" },
-    authError: { TH: "เกิดข้อผิดพลาดในการตรวจสอบสิทธิ์", EN: "Authentication error" },
-  };
+
 
   return (
     <div className="flex justify-center md:flex-row flex-col mt-20 mb-10 mx-10">

@@ -1,46 +1,28 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { CardItem } from '../components/CardItem';
-import { Landing } from '../components/Landing';
 import { Navbar } from '../components/Navbar';
-import { BigCard } from '../components/BigCard';
-import img1 from '../public/imgs/cardImg1.svg';
-import img2 from '../public/imgs/cardImg2.svg';
-import img3 from '../public/imgs/cardImg3.svg';
-import river from '../public/imgs/river.svg';
-import mountains from '../public/imgs/mountains.svg';
-import beach from '../public/imgs/beach.svg';
-import booking from '../public/imgs/booking.svg';
-import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
-import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
-import LandscapeIcon from '@mui/icons-material/Landscape';
-import { AccordionCard } from '../components/AccordionCard';
 import { Footer } from '../components/Footer';
 import { ToTop } from '../components/ToTop';
-import { useInView } from 'react-intersection-observer';
-import { Alert, AlertTitle } from '@mui/material';
 import { useState } from 'react';
-import usePassportData from '../hooks/usePassportData';
 import { Auth } from './auth';
 import Home from './home';
-import { AboutUs } from './about'; // Import the AboutUs component
-import { Contact } from './contact'; // Import the Contact component
+import { AboutUs } from './about';
+import { Contact } from './contact';
 
 const Main: NextPage = () => {
   const Map = dynamic(() => import('../components/Map.jsx') as any, { ssr: false });
-  const [language, setLanguage] = useState('EN'); // Language state in Main
-  const [page, setPage] = useState('collectibles'); // Page state in Main
+  const [language, setLanguage] = useState('EN');
+  const [page, setPage] = useState('collectibles');
 
   const handleLanguageToggle = () => {
     setLanguage((prevLanguage) => (prevLanguage === 'TH' ? 'EN' : 'TH'));
     console.log('handleLanguageToggle', language);
   };
 
-  const handlePageChange = (page: string) => {
-    console.log('Page change requested:', page);
-    setPage(page);
+  const handlePageChange = (newPage: string) => {
+    console.log('Page change requested:', newPage);
+    setPage(newPage);
   };
 
   return (
@@ -59,17 +41,16 @@ const Main: NextPage = () => {
           language={language}
           onLanguageToggle={handleLanguageToggle}
           onPageChange={handlePageChange}
-        />{' '}
-        {/* Pass state and handler */}
+        />
       </div>
-      {page === 'collectibles' && <Home />}
-      {page === 'signin' && <Auth  language={language}/>}
-      {page === 'about' && <AboutUs language={language}/>} {/* Render AboutUs component */}
-      {page === 'contact' && <Contact language={language}/>} {/* Render Contact component */}
+      {page === 'collectibles' && <Home language={language} />}
+      {page === 'signin' && <Auth language={language} />}
+      {page === 'about' && <AboutUs language={language} />}
+      {page === 'contact' && <Contact language={language} />}
       <div className="mt-40 relative">
         <ToTop />
       </div>
-      <Footer language={language} onPageChange={handlePageChange}/>
+      <Footer language={language} onPageChange={handlePageChange} />
     </div>
   );
 };
