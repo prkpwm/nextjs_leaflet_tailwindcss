@@ -7,12 +7,12 @@ type Props = {
 };
 
 export const Contact: NextPage<Props> = ({ language }) => {
-  const heading1 = useInView({
+  const [ref, inView] = useInView({
     threshold: 0.2,
     triggerOnce: true,
   });
 
-  const contactForm = useInView({
+  const [formRef, formInView] = useInView({
     threshold: 0.3,
     triggerOnce: true,
     delay: 200,
@@ -22,9 +22,7 @@ export const Contact: NextPage<Props> = ({ language }) => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionResult, setSubmissionResult] = useState<
-    "success" | "error" | null
-  >(null);
+  const [submissionResult, setSubmissionResult] = useState<"success" | "error" | null>(null);
 
   const contactMessages = {
     title: {
@@ -63,6 +61,10 @@ export const Contact: NextPage<Props> = ({ language }) => {
       TH: 'อ๊ะ! มีบางอย่างผิดพลาด โปรดลองอีกครั้งภายหลัง',
       EN: 'Oops! Something went wrong. Please try again later.',
     },
+    validationError: {
+      TH: 'โปรดกรอกข้อมูลให้ครบถ้วนและตรวจสอบอีเมลให้ถูกต้อง',
+      EN: 'Please fill all fields and provide a valid email address.',
+    },
     locationTitle: {
       TH: 'ที่ตั้งของเรา',
       EN: 'Our Location',
@@ -91,16 +93,35 @@ export const Contact: NextPage<Props> = ({ language }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Client-side validation
+    if (!name.trim() || !email.trim() || !message.trim() || !email.includes('@') || !email.includes('.')) {
+      setSubmissionResult("error");
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmissionResult(null);
 
-    // Simulate an API call (replace with your actual backend logic)
     try {
-      console.log("Submitting form:", { name, email, message });
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4200';
+      const response = await fetch(`${API_URL}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          name: name.trim(),
+          email: email.trim(),
+          message: message.trim()
+        }),
+      });
 
-      // In a real application, you would send this data to your server
-      // using an API endpoint.
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || contactMessages.errorMessage[language]);
+      }
 
       setName("");
       setEmail("");
@@ -118,9 +139,9 @@ export const Contact: NextPage<Props> = ({ language }) => {
     <div className="py-16 px-6 md:px-12 lg:px-24">
       <section className="mb-12">
         <h2
-          ref={heading1.ref}
+          ref={ref}
           className={`text-3xl lg:text-4xl font-extrabold tracking-tight mb-6 transition-all duration-1000 ${
-            heading1.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+            inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
           {contactMessages.title[language]}
@@ -131,9 +152,9 @@ export const Contact: NextPage<Props> = ({ language }) => {
       </section>
 
       <section
-        ref={contactForm.ref}
+        ref={formRef}
         className={`transition-all duration-1000 delay-300 ${
-          contactForm.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          formInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
       >
         <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
@@ -194,13 +215,12 @@ export const Contact: NextPage<Props> = ({ language }) => {
           )}
           {submissionResult === "error" && (
             <p className="text-red-500 text-sm mt-4">
-              {contactMessages.errorMessage[language]}
+              {contactMessages.validationError[language]}
             </p>
           )}
         </form>
       </section>
 
-      {/* Optional: Add contact information like address, phone number, etc. */}
       <section className="mt-12">
         <h3 className="text-2xl font-bold tracking-tight mb-4">
           {contactMessages.locationTitle[language]}
@@ -216,9 +236,9 @@ export const Contact: NextPage<Props> = ({ language }) => {
           {contactMessages.contactInfoTitle[language]}
         </h3>
         <p className="text-lg text-gray-700 leading-relaxed">
-          {contactMessages.emailInfo[language]} [Your Email Address]
+          {contactMessages.emailInfo[language]} contact@toppakpoom.com
           <br />
-          {contactMessages.phoneInfo[language]} [Your Phone Number]
+          {contactMessages.phoneInfo[language]} +66 123 456 789
         </p>
       </section>
     </div>
